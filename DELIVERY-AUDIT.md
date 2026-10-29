@@ -1,5 +1,7 @@
 # Ivy Young — delivery audit
 
+Historical local-delivery report. See `DEPLOYMENT-AUDIT.md` for the subsequent GitHub Pages deployment.
+
 Date: October 29, 2026. Delivery is local; no production deployment or protected-branch push was performed.
 
 ## 1. Implemented

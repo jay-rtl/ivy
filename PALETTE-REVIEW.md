@@ -1,5 +1,7 @@
 # Palette and encoding correction
 
+Historical local-palette review. See `DEPLOYMENT-AUDIT.md` for the subsequent public deployment.
+
 ## 1. Implemented
 
 Fixed the corrupted service-list arrows shown in the supplied screenshots. The CSS contained mojibake text in `.service-detail li::before`; it now uses `content: '\2197'` so the source remains ASCII for this symbol. All nine list markers are checked by the browser audit through computed pseudo-element content. A source scan also found no common mojibake patterns in the stylesheet, interaction script or page templates.

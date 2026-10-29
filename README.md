@@ -34,7 +34,7 @@ $env:SITE_URL = 'https://your-approved-domain.example'
 npm run build
 ```
 
-This enables indexing and generates absolute canonical, social image, and sitemap URLs using the configured origin. The sitemap includes only the five public pages. Deploy **only `dist/`**, using HTTPS. Never deploy the repository, `source-assets/`, or `node_modules/` as the web root. Configure the host’s redirects, error responses, caching, and security headers. This project has not been deployed.
+This enables indexing and generates absolute canonical, social image, and sitemap URLs using the configured site base URL. The sitemap includes only the five public pages. Deploy **only `dist/`**, using HTTPS. Never deploy the repository, `source-assets/`, or `node_modules/` as the web root. GitHub Pages is configured with HTTPS; its workflow publishes only `dist/`. Refer to `DEPLOYMENT-AUDIT.md` for deployment verification and remaining checks.
 
 ## Motion and accessibility
 
