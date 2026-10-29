@@ -7,10 +7,12 @@ try {
  build({SITE_URL:'https://example.invalid'});
  const titles=new Set(), descriptions=new Set();
  for(const page of pages){
-  const html=await readFile(`dist/${page}.html`,'utf8');
+  const route=page==='index'?'':page+'/';
+  const html=await readFile(`dist/${route}index.html`,'utf8');
   titles.add(html.match(/<title>(.*?)<\/title>/)[1]);descriptions.add(html.match(/name="description" content="(.*?)"/)[1]);
   assert(html.includes('<meta name="robots" content="index,follow">'));
-  assert(html.includes(`<link rel="canonical" href="https://example.invalid/${page==='index'?'':page+'.html'}">`));
+  assert(html.includes(`<link rel="canonical" href="https://example.invalid/${route}">`));
+  assert(!/href="(?:\.\.\/)?(?:index|about|representation|journal|contact)\.html/.test(html));
   assert(html.includes('<meta property="og:image" content="https://example.invalid/assets/portrait-1200.webp">'));
  }
  assert.equal(titles.size,5);assert.equal(descriptions.size,5);

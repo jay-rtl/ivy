@@ -2,6 +2,8 @@
 
 Live hosting: https://jay-rtl.github.io/ivy/ . The GitHub Pages workflow in `.github/workflows/deploy.yml` builds and deploys `dist/` automatically when `main` changes, with `SITE_URL=https://jay-rtl.github.io/ivy`. The site URL supports hosting subpaths. Default local builds still disable indexing.
 
+Public routes use clean directory URLs: `/ivy/`, `/ivy/about/`, `/ivy/representation/`, `/ivy/journal/`, `/ivy/contact/`. Navigation, canonicals and the sitemap use these URLs. Previously shared `.html` pages remain as small client-side redirect documents with canonical links; GitHub Pages does not provide configurable server-side redirects for them. JavaScript redirects preserve query strings and fragments, with a meta-refresh/link fallback. The local server also supports directory index pages and redirects old `.html` paths.
+
 Five static pages: Home, About, Representation, Journal, Contact. Source content is adapted from the supplied HTML and portraits, retained in `source-assets/`. No invented clients, testimonials, achievements, or portfolio projects are included.
 
 Current palette: midnight navy `#15283D`, soft ivory `#F7F6F2`, slate blue `#3F6383`, and pale blue `#E8EEF3`. Theme tokens live in `src/styles.css`. Service-list arrows use the ASCII CSS escape `\2197` to avoid character-encoding corruption. The browser audit verifies every service-list marker.
@@ -14,7 +16,7 @@ npm run build
 npm run dev
 ```
 
-Open http://127.0.0.1:4173. The build writes a complete static website to `dist/`. You can also open `dist/index.html` directly for a basic local preview. No backend or database is required.
+Open http://127.0.0.1:4173. The build writes a complete static website to `dist/`. Use the local server to preview directory routes. No backend or database is required.
 
 ## Files
 

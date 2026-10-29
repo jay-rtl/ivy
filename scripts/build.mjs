@@ -57,12 +57,29 @@ function closing(title) { return `<section class="closing section-space"><div cl
 function interest(n,t,p) { return `<div class="interest reveal"><span>${n}</span><div><h3>${t}</h3><p>${p}</p></div></div>`; }
 function detail(n,t,h,p,items) { const id = ['literary','publishing','screen'][Number(n)-1]; return `<article id="${id}" class="service-detail reveal"><div><span class="eyebrow">${n} / The approach</span><h2>${t}</h2></div><div><h3>${h}</h3><p>${p}</p><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul>${link('contact.html', 'Discuss your project')}</div></article>`; }
 const nav = [['index.html','Home'],['about.html','About'],['representation.html','Representation'],['journal.html','Journal'],['contact.html','Contact']];
+const routeFor = file => file === 'index.html' ? '' : file.replace(/\.html$/, '/');
+function cleanLinks(html, file) {
+ const prefix = file === 'index.html' ? '' : '../';
+ return html.replace(/\b(href|src)="([^"]+)"/g, (match, attr, value) => {
+  if (/^(?:[a-z][a-z\d+.-]*:|#|\/)/i.test(value)) return match;
+  const [target, fragment] = value.split('#');
+  const next = Object.hasOwn(pages, target) ? routeFor(target) : target;
+  return `${attr}="${prefix + (next || './')}${fragment ? '#' + fragment : ''}"`;
+ }).replace(/srcset="([^"]+)"/g, (_, value) => `srcset="${value.split(',').map(item => prefix + item.trim()).join(', ')}"`);
+}
 for (const [file, page] of Object.entries(pages)) {
  const navLinks = nav.map(([href,text])=>`<a href="${href}" ${file===href?'aria-current="page"':''}>${text}</a>`).join('');
- const canonical = origin ? `${origin}/${file === 'index.html' ? '' : file}` : '';
+ const canonical = origin ? `${origin}/${routeFor(file)}` : '';
  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${page.title}</title><meta name="description" content="${page.description}"><meta name="theme-color" content="#f7f6f2"><meta name="robots" content="${origin?'index,follow':'noindex,nofollow'}">${canonical?`<link rel="canonical" href="${canonical}"><meta property="og:url" content="${canonical}">`:''}<meta property="og:type" content="website"><meta property="og:title" content="${page.title}"><meta property="og:description" content="${page.description}"><meta property="og:site_name" content="Ivy Young">${origin?`<meta property="og:image" content="${origin}/assets/portrait-1200.webp">`:''}<meta name="twitter:card" content="summary_large_image"><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"><script defer src="vendor/gsap.min.js"></script><script defer src="vendor/ScrollTrigger.min.js"></script><script defer src="app.js"></script></head><body data-page="${file}"><a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="header-inner wrap"><a class="wordmark" href="index.html" aria-label="Ivy Young home">ivy young<span class="brand-dot">.</span></a><nav class="desktop-nav" aria-label="Primary">${navLinks}</nav><a class="header-contact" href="contact.html">Let’s talk ${arrow}</a><button class="menu-toggle" hidden aria-expanded="false" aria-controls="mobile-menu"><span class="menu-label">Menu</span><span class="menu-icon"><i></i><i></i></span></button></div><nav class="no-js-nav wrap" aria-label="Mobile">${navLinks}</nav><div class="reading-progress" aria-hidden="true"></div></header><dialog id="mobile-menu" class="mobile-menu" aria-label="Navigation"><div class="menu-top"><a class="wordmark" href="index.html">ivy young.</a><button class="menu-close" aria-label="Close navigation">Close <span aria-hidden="true">×</span></button></div><p class="eyebrow">A new chapter awaits</p><nav aria-label="Mobile primary">${nav.map(([href,text],i)=>`<a href="${href}" ${file===href?'aria-current="page"':''}><span>0${i+1}</span>${text}${arrow}</a>`).join('')}</nav><a class="menu-email" href="mailto:ivy@lexiconinkhouse.com">ivy@lexiconinkhouse.com</a><span class="small-label">Independent literary & film representation</span></dialog><main id="main">${page.content}</main><footer class="site-footer"><div class="wrap"><div class="footer-top"><a class="wordmark" href="index.html">ivy young.</a><p>Independent thinking.<br>Extraordinary possibilities.</p><a href="mailto:ivy@lexiconinkhouse.com">ivy@lexiconinkhouse.com ${arrow}</a></div><div class="footer-bottom"><span>© ${new Date().getFullYear()} Ivy Young</span><nav aria-label="Footer">${navLinks}</nav><span>Every story starts somewhere.</span></div></div></footer></body></html>`;
- await writeFile(new URL(file,out),html);
+ const route = routeFor(file);
+ if (route) await mkdir(new URL(route, out), {recursive:true});
+ await writeFile(new URL(route + 'index.html',out),cleanLinks(html, file));
+ if (route) {
+  const target = './' + route;
+  const redirect = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex,follow"><meta http-equiv="refresh" content="0;url=${target}">${canonical ? `<link rel="canonical" href="${canonical}">` : ''}<title>Page moved — Ivy Young</title></head><body><p>This page has moved. <a href="${target}">Continue to ${page.title}</a>.</p><script>location.replace(${JSON.stringify(target)}+location.search+location.hash);</script></body></html>`;
+  await writeFile(new URL(file, out), redirect);
+ }
 }
 await writeFile(new URL('robots.txt',out), origin ? `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n` : 'User-agent: *\nDisallow: /\n');
-await writeFile(new URL('sitemap.xml',out), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${origin ? Object.keys(pages).map(f=>`<url><loc>${origin}/${f==='index.html'?'':f}</loc></url>`).join('') : ''}</urlset>`);
+await writeFile(new URL('sitemap.xml',out), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${origin ? Object.keys(pages).map(f=>`<url><loc>${origin}/${routeFor(f)}</loc></url>`).join('') : ''}</urlset>`);
 console.log(`Built ${Object.keys(pages).length} pages. ${origin ? 'Production SEO: '+origin : 'Local preview: indexing disabled; set SITE_URL for launch.'}`);
