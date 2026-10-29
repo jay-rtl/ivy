@@ -2,3 +2,5 @@ node_modules/
 test-results/
 ivy-young-website.zip
 .deployment-tools/
+ivy-hostinger-upload.zip
+HOSTINGER-PUBLIC-KEY.txt

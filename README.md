@@ -1,8 +1,8 @@
 # Ivy Young — literary & film representation
 
-Live hosting: https://jay-rtl.github.io/ivy/ . The GitHub Pages workflow in `.github/workflows/deploy.yml` builds and deploys `dist/` automatically when `main` changes, with `SITE_URL=https://jay-rtl.github.io/ivy`. The site URL supports hosting subpaths. Default local builds still disable indexing.
+Primary website: https://ivy.independentliteraryagent.net/ on Hostinger. GitHub mirror: https://jay-rtl.github.io/ivy/ . The GitHub Pages workflow rebuilds the mirror on pushes to `main`, with canonical and social URLs pointing to the primary Hostinger domain. Default local builds still disable indexing. Hostinger uploads are separate from the GitHub Pages workflow; pushing to GitHub alone does not upload files to Hostinger.
 
-Public routes use clean directory URLs: `/ivy/`, `/ivy/about/`, `/ivy/representation/`, `/ivy/journal/`, `/ivy/contact/`. Navigation, canonicals and the sitemap use these URLs. Previously shared `.html` pages remain as small client-side redirect documents with canonical links; GitHub Pages does not provide configurable server-side redirects for them. JavaScript redirects preserve query strings and fragments, with a meta-refresh/link fallback. The local server also supports directory index pages and redirects old `.html` paths.
+Primary public routes use clean directory URLs: `/`, `/about/`, `/representation/`, `/journal/`, `/contact/`. The GitHub mirror retains its `/ivy/` prefix. Navigation, canonicals and the sitemap use clean URLs. Hostinger's `hosting/hostinger.htaccess` provides 301 redirects for old `.html` routes. Compatibility documents provide client-side redirects on GitHub Pages, which does not use `.htaccess`. The local server supports directory index pages and old `.html` redirects.
 
 Five static pages: Home, About, Representation, Journal, Contact. Source content is adapted from the supplied HTML and portraits, retained in `source-assets/`. No invented clients, testimonials, achievements, or portfolio projects are included.
 
@@ -28,6 +28,8 @@ Open http://127.0.0.1:4173. The build writes a complete static website to `dist/
 - `test-results/`: generated screenshots and JSON audit results (ignored by Git).
 
 ## Launch configuration
+
+For Hostinger updates, build with `SITE_URL=https://ivy.independentliteraryagent.net`, copy `hosting/hostinger.htaccess` to the generated output as `.htaccess`, and upload only the static output to the verified Ivy document root after taking a backup outside the public directory. The previous Hostinger deployment was backed up; its exact backup location and release checksum are stored in ignored `.deployment-tools/hostinger-deployment.json`. Do not upload deployment keys, original assets, source code or dependencies. See `HOSTINGER-LIVE-AUDIT.md` for the completed deployment checks.
 
 The default local build deliberately disables indexing. Once the final HTTPS origin is confirmed, build with:
 
