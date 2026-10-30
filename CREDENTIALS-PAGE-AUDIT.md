@@ -1,5 +1,7 @@
 # Native Credentials page audit
 
+Historical first-version report. The subsequent red layout, QR/barcode and one-sheet printing update is documented in `REFERENCE-PRINT-AUDIT.md`.
+
 ## 1. Implemented
 
 Created **https://ivy.independentliteraryagent.net/credentials/** as a complete native page with its own indexable HTML, title, description, canonical, portrait, professional-framework content, source links, expandable record details, contact CTA and print action. It is not a redirect or embedded Google Sites page. Added Credentials to desktop/mobile/footer navigation, connected About to it, and expanded the sitemap to six public pages. Added a Hostinger 301 redirect from `/credentials.html`.
