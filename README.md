@@ -2,7 +2,7 @@
 
 Primary website: https://ivy.independentliteraryagent.net/ on Hostinger. GitHub mirror: https://jay-rtl.github.io/ivy/ . The GitHub Pages workflow rebuilds the mirror on pushes to `main`, with canonical and social URLs pointing to the primary Hostinger domain. Default local builds still disable indexing. Hostinger uploads are separate from the GitHub Pages workflow; pushing to GitHub alone does not upload files to Hostinger.
 
-Primary public routes use clean directory URLs: `/`, `/about/`, `/representation/`, `/journal/`, `/contact/`. The GitHub mirror retains its `/ivy/` prefix. Navigation, canonicals and the sitemap use clean URLs. Hostinger's `hosting/hostinger.htaccess` provides 301 redirects for old `.html` routes. Compatibility documents provide client-side redirects on GitHub Pages, which does not use `.htaccess`. The local server supports directory index pages and old `.html` redirects.
+Primary public routes use clean directory URLs: `/`, `/about/`, `/representation/`, `/journal/`, `/credentials/`, `/contact/`. The GitHub mirror retains its `/ivy/` prefix. Navigation, canonicals and the sitemap use clean URLs. Hostinger's `hosting/hostinger.htaccess` provides 301 redirects for old `.html` routes. Compatibility documents provide client-side redirects on GitHub Pages, which does not use `.htaccess`. The local server supports directory index pages and old `.html` redirects.
 
 Six static pages: Home, About, Representation, Journal, Credentials, Contact. Source content is adapted from the supplied HTML, portraits and professional-reference URL. Assets are retained in `source-assets/`. No invented clients, testimonials, achievements, or portfolio projects are included.
 
@@ -52,7 +52,9 @@ Email and telephone links use details supplied in the original HTML. They open t
 
 ## Content decisions
 
-The original generic portfolio placeholders were omitted because no book covers or confirmed projects were supplied. The Journal uses the supplied Frankfurt photo without asserting endorsement, affiliation, or a representation agreement. Personal biography and service descriptions come from the supplied source, and still require owner review. The original third-party credentials URL is retained on About as “Professional reference,” but could not be verified during this work; credential claims have not been reproduced as verified accreditation. Verify its destination and content before launch.
+The original generic portfolio placeholders were omitted because no book covers or confirmed projects were supplied. The Journal uses the supplied Frankfurt photo without asserting endorsement, affiliation, or a representation agreement. Personal biography and service descriptions come from the supplied source, and still require owner review. About now links to the native Credentials page, which identifies the original Google Sites reference and official CAA company-information destination. Both sources were inspected for this update; no personal CAA accreditation was independently established or claimed.
+
+Stylesheet and interaction-script URLs include a content-derived version query so changed CSS/JS is fetched after deployments, including when Hostinger CDN retains the old unversioned resource.
 
 ## Animation reference
 
