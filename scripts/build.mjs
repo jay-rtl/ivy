@@ -1,17 +1,24 @@
 import { mkdir, copyFile, writeFile, readFile } from 'node:fs/promises';
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
+import { credentialsPage } from '../src/pages/credentials.mjs';
+import { createHash } from 'node:crypto';
 const out = new URL('../dist/', import.meta.url);
 await mkdir(new URL('assets/', out), { recursive: true });
 await mkdir(new URL('vendor/', out), { recursive: true });
-const photos = [['portrait', 'ivy young pic 2.png'], ['office', 'ivy young pic3.png'], ['frankfurt', 'ivy young pic 4 franckfurt.png'], ['smiling', 'ivy-young-smiling.png'], ['conversation', 'ivy-young-conversation.png']];
+const photos = [['portrait', 'ivy young pic 2.png'], ['office', 'ivy young pic3.png'], ['frankfurt', 'ivy young pic 4 franckfurt.png'], ['smiling', 'ivy-young-smiling.png'], ['conversation', 'ivy-young-conversation.png'], ['reference', 'ivy-young-reference.png']];
+const photoDimensions = {};
 for (const [name, file] of photos) {
+  const metadata = await sharp(fileURLToPath(new URL('../source-assets/' + file, import.meta.url))).metadata();
+  photoDimensions[name] = {width:metadata.width,height:metadata.height};
   for (const width of [600, 1200]) {
     await sharp(fileURLToPath(new URL('../source-assets/' + file, import.meta.url))).resize({ width, withoutEnlargement: true }).webp({ quality: 83 }).toFile(fileURLToPath(new URL(`assets/${name}-${width}.webp`, out)));
   }
 }
 for (const name of ['gsap', 'ScrollTrigger']) await copyFile(new URL(`../node_modules/gsap/dist/${name}.min.js`, import.meta.url), new URL(`vendor/${name}.min.js`, out));
 for (const file of ['styles.css', 'app.js', 'favicon.svg']) await copyFile(new URL('../src/' + file, import.meta.url), new URL(file, out));
+const assetVersions = {};
+for (const file of ['styles.css', 'app.js']) assetVersions[file] = createHash('sha256').update(await readFile(new URL('../src/' + file, import.meta.url))).digest('hex').slice(0,12);
 const origin = process.env.SITE_URL?.replace(/\/$/, '');
 if (origin) {
  const url = new URL(origin);
@@ -19,7 +26,7 @@ if (origin) {
 }
 const arrow = '<span aria-hidden="true">↗</span>';
 const link = (href, text, cls = '') => `<a class="text-link ${cls}" href="${href}">${text}${arrow}</a>`;
-const photo = (name, alt, cls = '', eager = false) => `<img class="${cls}" src="assets/${name}-1200.webp" srcset="assets/${name}-600.webp 600w, assets/${name}-1200.webp 1200w" sizes="(max-width: 700px) 100vw, 50vw" width="${name === 'frankfurt' ? 1037 : 1098}" height="${name === 'frankfurt' ? 1516 : 1433}" alt="${alt}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
+const photo = (name, alt, cls = '', eager = false) => `<img class="${cls}" src="assets/${name}-1200.webp" srcset="assets/${name}-600.webp 600w, assets/${name}-1200.webp ${Math.min(1200,photoDimensions[name].width)}w" sizes="(max-width: 700px) 100vw, 50vw" width="${photoDimensions[name].width}" height="${photoDimensions[name].height}" alt="${alt}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
 const pages = {
   'index.html': { title: 'Ivy Young — Independent Literary & Film Representation', description: 'Independent literary and film representation with Ivy Young. Discover a thoughtful approach to science fiction, memoir, children’s literature, and stories beyond the page.', content: `
   <section class="hero wrap">
@@ -33,7 +40,7 @@ const pages = {
   'about.html': { title: 'About Ivy Young — A Personal Approach to Literary Representation', description: 'Meet Ivy Young, a literary agent and former secondary school teacher with an interest in distinctive voices, cultural connection, and the potential within every story.', content: `
   <section class="page-intro wrap"><p class="eyebrow intro">The person behind the work</p><h1 class="intro">A reader first.<br><em>An advocate, always.</em></h1></section>
   <section class="bio wrap"><figure class="bio-image reveal">${photo('smiling', 'Ivy Young smiling at her desk in a navy shirt', '', true)}<figcaption>Ivy Young / Independent literary & film representation</figcaption></figure><div class="bio-copy"><p class="eyebrow reveal">Hello, I’m Ivy.</p><h2 class="reveal">I believe in the story<br><em>only you can tell.</em></h2><p class="reveal">I’m a literary agent drawn to distinctive voices and unforgettable stories—work that awakens imagination, invites empathy, and leaves us with something meaningful after the final page.</p><p class="reveal">As a former secondary school teacher, I bring a background in encouraging young writers, studying literature, and helping storytellers strengthen their voices. That experience shapes the way I read: with curiosity, patience, and an eye for what a manuscript can become.</p><p class="reveal">My Asian and Canadian heritage has given me a deep appreciation for different cultures and ways of seeing the world. I’m particularly interested in stories of identity, resilience, cultural connection, and personal transformation.</p></div></section>
-  <div class="wrap reference-link reveal"><a class="text-link" href="https://sites.google.com/view/ivycaa/caa-acreditation" target="_blank" rel="noopener noreferrer">Professional reference <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a></div>
+  <div class="wrap reference-link reveal">${link('credentials.html','View credentials &amp; references')}</div>
   <section class="quote-section section-space wrap reveal"><p class="eyebrow">A note to writers</p><blockquote>“Every manuscript begins<br>as one person’s vision.<br><em>Let’s explore what comes next.</em>”</blockquote><span class="signature">Ivy Young</span></section>
   <section class="reading wrap section-space"><div class="reveal"><p class="eyebrow">What catches my attention</p><h2>Different worlds.<br><em>A human connection.</em></h2></div><div class="interest-list">${interest('01', 'Science fiction', 'Imaginative worlds that open a window onto the human experience.')}${interest('02', 'Memoir', 'Personal truths told with clarity, courage, and a distinctive voice.')}${interest('03', 'Children’s literature', 'Stories that encourage curiosity and make room for young imaginations.')}</div></section>
   ${closing('Your voice.<br><em>Your next chapter.</em>')}` },
@@ -57,7 +64,8 @@ function serviceRows() { return [['01','Literary representation','Distinctive vo
 function closing(title) { return `<section class="closing section-space"><div class="wrap reveal"><p class="eyebrow">Let’s turn the page</p><h2>${title}</h2>${link('contact.html', 'Start a conversation', 'button-link')}</div></section>`; }
 function interest(n,t,p) { return `<div class="interest reveal"><span>${n}</span><div><h3>${t}</h3><p>${p}</p></div></div>`; }
 function detail(n,t,h,p,items) { const id = ['literary','publishing','screen'][Number(n)-1]; return `<article id="${id}" class="service-detail reveal"><div><span class="eyebrow">${n} / The approach</span><h2>${t}</h2></div><div><h3>${h}</h3><p>${p}</p><ul>${items.map(x=>`<li>${x}</li>`).join('')}</ul>${link('contact.html', 'Discuss your project')}</div></article>`; }
-const nav = [['index.html','Home'],['about.html','About'],['representation.html','Representation'],['journal.html','Journal'],['contact.html','Contact']];
+pages['credentials.html'] = credentialsPage({photo,link});
+const nav = [['index.html','Home'],['about.html','About'],['representation.html','Representation'],['journal.html','Journal'],['credentials.html','Credentials'],['contact.html','Contact']];
 const routeFor = file => file === 'index.html' ? '' : file.replace(/\.html$/, '/');
 function cleanLinks(html, file) {
  const prefix = file === 'index.html' ? '' : '../';
@@ -66,7 +74,8 @@ function cleanLinks(html, file) {
   const [target, fragment] = value.split('#');
   const next = Object.hasOwn(pages, target) ? routeFor(target) : target;
   return `${attr}="${prefix + (next || './')}${fragment ? '#' + fragment : ''}"`;
- }).replace(/srcset="([^"]+)"/g, (_, value) => `srcset="${value.split(',').map(item => prefix + item.trim()).join(', ')}"`);
+ }).replace(/srcset="([^"]+)"/g, (_, value) => `srcset="${value.split(',').map(item => prefix + item.trim()).join(', ')}"`)
+ .replace(/\b(href|src)="([^"]*(styles\.css|app\.js))"/g, (_, attr, url, asset) => `${attr}="${url}?v=${assetVersions[asset]}"`);
 }
 for (const [file, page] of Object.entries(pages)) {
  const navLinks = nav.map(([href,text])=>`<a href="${href}" ${file===href?'aria-current="page"':''}>${text}</a>`).join('');

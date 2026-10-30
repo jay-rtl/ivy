@@ -7,7 +7,7 @@ http.createServer(async(req,res)=>{
  try {
   const url=new URL(req.url,'http://localhost');
   const route=decodeURIComponent(url.pathname);
-  if (/^\/(about|representation|journal|contact)\.html$/.test(route)) {res.writeHead(301,{Location:route.replace(/\.html$/,'/')+url.search}).end();return;}
+  if (/^\/(about|representation|journal|credentials|contact)\.html$/.test(route)) {res.writeHead(301,{Location:route.replace(/\.html$/,'/')+url.search}).end();return;}
   let file=path.resolve(root,'.'+route);
   if(file!==root&&!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}
   if((await stat(file)).isDirectory()){

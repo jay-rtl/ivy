@@ -1,4 +1,5 @@
 document.body.classList.add('js');
+document.querySelector('[data-print]')?.addEventListener('click',()=>window.print());
 const header = document.querySelector('.site-header');
 const toggle = document.querySelector('.menu-toggle');
 const menu = document.querySelector('#mobile-menu');

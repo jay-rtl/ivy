@@ -4,7 +4,9 @@ Primary website: https://ivy.independentliteraryagent.net/ on Hostinger. GitHub 
 
 Primary public routes use clean directory URLs: `/`, `/about/`, `/representation/`, `/journal/`, `/contact/`. The GitHub mirror retains its `/ivy/` prefix. Navigation, canonicals and the sitemap use clean URLs. Hostinger's `hosting/hostinger.htaccess` provides 301 redirects for old `.html` routes. Compatibility documents provide client-side redirects on GitHub Pages, which does not use `.htaccess`. The local server supports directory index pages and old `.html` redirects.
 
-Five static pages: Home, About, Representation, Journal, Contact. Source content is adapted from the supplied HTML and portraits, retained in `source-assets/`. No invented clients, testimonials, achievements, or portfolio projects are included.
+Six static pages: Home, About, Representation, Journal, Credentials, Contact. Source content is adapted from the supplied HTML, portraits and professional-reference URL. Assets are retained in `source-assets/`. No invented clients, testimonials, achievements, or portfolio projects are included.
+
+`src/pages/credentials.mjs` defines the native `/credentials/` page. It adapts the supplied Google Sites reference into the site's own design and links to the original record and official CAA About page. The source identifies independent representation; the page does not claim CAA employment, membership, accreditation or endorsement. Source-page identifiers/date are explicitly labelled and do not function as agency-issued credentials. A masked placeholder document ID from the supplied page was omitted. The portrait was extracted from that user-supplied source and optimized locally; no embedded page, tracking or remote image service is used. The print button invokes browser printing; print CSS ensures scroll-revealed content remains visible.
 
 Current palette: midnight navy `#15283D`, soft ivory `#F7F6F2`, slate blue `#3F6383`, and pale blue `#E8EEF3`. Theme tokens live in `src/styles.css`. Service-list arrows use the ASCII CSS escape `\2197` to avoid character-encoding corruption. The browser audit verifies every service-list marker.
 
@@ -38,7 +40,7 @@ $env:SITE_URL = 'https://your-approved-domain.example'
 npm run build
 ```
 
-This enables indexing and generates absolute canonical, social image, and sitemap URLs using the configured site base URL. The sitemap includes only the five public pages. Deploy **only `dist/`**, using HTTPS. Never deploy the repository, `source-assets/`, or `node_modules/` as the web root. GitHub Pages is configured with HTTPS; its workflow publishes only `dist/`. Refer to `DEPLOYMENT-AUDIT.md` for deployment verification and remaining checks.
+This enables indexing and generates absolute canonical, social image, and sitemap URLs using the configured site base URL. The sitemap includes only the six public pages. Deploy **only `dist/`**, using HTTPS. Never deploy the repository, `source-assets/`, or `node_modules/` as the web root. The primary Hostinger deployment uses `hosting/hostinger.htaccess`; the GitHub mirror publishes only `dist/`. Refer to `HOSTINGER-LIVE-AUDIT.md` for deployment verification and remaining checks.
 
 ## Motion and accessibility
 
